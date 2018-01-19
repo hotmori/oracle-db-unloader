@@ -1,0 +1,34 @@
+//common results
+
+results_path d:/temp/results
+db_scripts_path db-scripts
+db_tns swa01-adb012
+db_login system
+db_password sdfsdf
+schema_list zportal, att
+remap zportal=xportal
+
+{
+  "results_path": "d:/temp/results",
+  "databases": [ {"tns" : "swa01-adb012"
+                 }
+
+               ]
+    "maps": [
+        {
+            "id": "russia",
+            "iscategorical": "0"
+        },
+        {
+            "id": "finland",
+            "iscategorical": "0"
+        }
+    ],
+    "masks": {
+        "id": "lion"
+    },
+    "om_points": "value",
+    "parameters": {
+        "id": "valore"
+    }
+}
