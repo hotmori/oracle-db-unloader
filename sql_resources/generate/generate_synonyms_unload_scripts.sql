@@ -12,6 +12,7 @@ spool &v_schema_path/&v_temp_dir/unload_synonyms_temp.sql
 select '@&v_sql_path/unload_synonym.sql '||t.owner||' '||t.synonym_name||' '||lower(t.synonym_name) ||' &v_schema_path/&v_obj_dir'
   from dba_synonyms t
  where t.owner=upper('&v_schema')
+    or t.owner = 'PUBLIC' and t.table_owner=upper('&v_schema')
  order by t.synonym_name
 /
 

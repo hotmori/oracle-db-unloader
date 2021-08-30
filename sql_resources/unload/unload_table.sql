@@ -84,6 +84,24 @@ select 'ALTER TABLE ' || owner || '.' || table_name ||
  order by c.log_group_type, c.always, c.generated, c.log_group_name
 /
 
+select 'comment on table ' || lower(dtc.table_name) || ' is '
+        || '''' || replace(dtc.comments,'''','''''') || '''' || ';' cm
+from dba_tab_comments dtc
+where dtc.owner = upper('&v_schema')
+and dtc.table_name = upper('&v_obj_name');
+
+select 'comment on column ' || lower(dcc.table_name) || '.' || lower(dcc.column_name) || ' is '
+        || '''' || replace(dcc.comments,'''','''''') || '''' || ';' col_comment_txt
+  from dba_col_comments dcc
+  join dba_tab_columns col
+    on col.owner = dcc.owner
+   and col.table_name = dcc.table_name
+   and col.column_name = dcc.column_name
+ where dcc.owner = upper('&v_schema')
+   and dcc.table_name = upper('&v_obj_name')
+   and dcc.comments is not null
+order by col.column_id;
+
 @sql_resources/common/unset_transform_params.sql
 
 spool off

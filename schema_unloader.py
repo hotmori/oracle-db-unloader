@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from random import randint
 
 DEFAULT_MAX_CONNECTIONS = 5
-TEMP_DIR = 'temp'
+TEMP_DIR = 'ztemp'
 SQL_RESOURCES_DIR = 'sql_resources'
 
 g_results_path = None
@@ -73,6 +73,8 @@ def exec_sqlplus_in_thread(script):
     print("created session: ", g_thread_data.session.id)
   else:
     None
+
+  #print("going to execute: " + script)
   exec_sqlplus(g_thread_data.session, script)
 
 def exec_batch_sqlplus(scripts, pool, desc):
@@ -98,8 +100,9 @@ def make_dir(dir_path):
 def unload(schema):
 
   schema_dir = schema
-  schema_path = g_results_path + '/' + g_db_scripts_dir + '/' + g_db_alias + '/' + schema_dir
+  schema_path = g_results_path + '/' + g_db_scripts_dir + '/' + schema_dir
   temp_path =  schema_path + '/' + TEMP_DIR
+  #temp_path =  g_results_path + '/' + TEMP_DIR + '_' + g_db_scripts_dir + '/' + '/' + schema_dir
   print(schema_path)
   print(temp_path)
   # MAIN  ------------------------------------------------------------------------------
@@ -111,6 +114,7 @@ def unload(schema):
   make_dir(schema_path + '/functions')
   make_dir(schema_path + '/packages')
   make_dir(schema_path + '/procedures')
+  make_dir(schema_path + '/sequences')
   make_dir(schema_path + '/synonyms')
   make_dir(schema_path + '/triggers')
   make_dir(schema_path + '/types')
@@ -119,7 +123,9 @@ def unload(schema):
   make_dir(schema_path + '/table_rows')
   make_dir(temp_path)
 
-  gen_scripts = [ '@' + SQL_RESOURCES_DIR + '/generate/generate_synonyms_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'synonyms',
+  gen_scripts = [
+                  '@' + SQL_RESOURCES_DIR + '/generate/generate_sequences_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'sequences',
+                  '@' + SQL_RESOURCES_DIR + '/generate/generate_synonyms_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'synonyms',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_views_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'views',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_packages_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'packages',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_functions_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'functions',
@@ -129,7 +135,7 @@ def unload(schema):
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_tables_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'tables',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_table_rows_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_rows',
                 ]
-
+  #print(gen_scripts)
   exec_batch_sqlplus(gen_scripts, g_thread_pool, 'generation temp scripts')
 
   for temp_file in listdir(temp_path):

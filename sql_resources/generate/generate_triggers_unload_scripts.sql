@@ -8,7 +8,7 @@ define v_sql_path = sql_resources/unload
 
 spool &v_schema_path/&v_temp_dir/unload_triggers_temp.sql
 
-select '@&v_sql_path/unload_function.sql' || ' '
+select '@&v_sql_path/unload_trigger.sql' || ' '
        ||t.owner || ' ' -- 1
        ||t.object_name || ' ' -- 2
        ||replace(t.object_type,' ','_')||' ' -- 3

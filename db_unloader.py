@@ -1,20 +1,54 @@
 import schema_unloader
+import disconnect_vpn
 import shutil
+import datetime
+import sys
 
-g_results_path = 'd:/temp/results'
-g_db_scripts_dir = ''
-g_login = ''
-g_password = ''
+now = datetime.datetime.now()
 
-shutil.rmtree(g_results_path + '/' + g_db_scripts_dir, ignore_errors=True)
+#print(now)
 
-schema_unloader.initialize( db_tns = 'xdb',
-                            login = g_login,
-                            password = g_password,
-                            results_path = g_results_path,
-                            db_scripts_dir = g_db_scripts_dir,
-                            db_alias = 'adb',
-                            max_connections=10 )
+dt = now.strftime("%Y_%m_%d_%H%M%S")
+print(dt)
 
-schema_unloader.unload("scott")
-schema_unloader.deinitialize()
+g_results_path = 'd:/logs/db_unloader_results/' + dt
+
+
+print('results_path: ' + g_results_path)
+
+def unload_db(login,
+              password,
+              tns,
+              vpn_disc):
+
+  l_login = login
+  l_password = password
+  l_db_tns = tns
+
+
+  shutil.rmtree(g_results_path + '/' + l_db_tns, ignore_errors=True)
+
+  schema_unloader.initialize( db_tns = l_db_tns,
+                              login = l_login,
+                              password = l_password,
+                              results_path = g_results_path,
+                              db_scripts_dir = l_db_tns,
+                              db_alias = 'dwh', # not used
+                              max_connections=15 )
+
+# list of schemas
+  for schema in g_schema_list:
+    if schema != "":
+      schema_unloader.unload(schema)
+
+  schema_unloader.deinitialize()
+
+  if vpn_disc:
+    disconnect_vpn.disconnect_vpn()
+
+g_schema_list = [
+"scott"
+             ]
+
+             
+unload_db(login='scott',password='scott',tns='mydb',vpn_disc=False)
