@@ -8,7 +8,7 @@ define v_sql_path = sql_resources/unload
 
 spool &v_schema_path/&v_temp_dir/unload_tables_temp.sql
 
-select '@&v_sql_path/unload_table.sql'|| ' '
+select '@&v_sql_path/unload_table_simple.sql'|| ' '
                                   ||t.owner ||' ' -- 1
                                   ||t.table_name||' ' -- 2
                                   ||lower(t.table_name) || ' ' -- 3

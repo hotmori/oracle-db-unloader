@@ -1,5 +1,4 @@
 import schema_unloader
-import disconnect_vpn
 import shutil
 import datetime
 import sys
@@ -18,8 +17,7 @@ print('results_path: ' + g_results_path)
 
 def unload_db(login,
               password,
-              tns,
-              vpn_disc):
+              tns):
 
   l_login = login
   l_password = password
@@ -43,12 +41,10 @@ def unload_db(login,
 
   schema_unloader.deinitialize()
 
-  if vpn_disc:
-    disconnect_vpn.disconnect_vpn()
 
 g_schema_list = [
 "scott"
              ]
 
              
-unload_db(login='scott',password='scott',tns='mydb',vpn_disc=False)
+unload_db(login='scott',password='scott',tns='mydb')
