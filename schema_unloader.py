@@ -8,7 +8,7 @@ from subprocess import Popen, PIPE, DEVNULL
 from concurrent.futures import ThreadPoolExecutor, wait, as_completed
 from random import randint
 
-DEFAULT_MAX_CONNECTIONS = 5
+
 TEMP_DIR = 'ztemp'
 SQL_RESOURCES_DIR = 'sql_resources'
 
@@ -18,7 +18,6 @@ g_login = None
 g_password = None
 g_thread_data = None
 g_thread_pool = None
-g_db_alias = None
 
 #FUNCTIONS
 def initialize(db_tns,
@@ -26,15 +25,13 @@ def initialize(db_tns,
                password,
                results_path,
                db_scripts_dir,
-               db_alias,
-               max_connections=DEFAULT_MAX_CONNECTIONS):
+               max_connections):
 
   global g_db_tns
   global g_login
   global g_password
   global g_results_path
   global g_db_scripts_dir
-  global g_db_alias
 
   global g_thread_data
   global g_thread_pool
@@ -44,7 +41,6 @@ def initialize(db_tns,
   g_password = password
   g_results_path = results_path
   g_db_scripts_dir = db_scripts_dir
-  g_db_alias = db_alias
 
   g_thread_data = threading.local()
   g_thread_pool = ThreadPoolExecutor(max_connections)
