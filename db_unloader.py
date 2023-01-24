@@ -55,5 +55,5 @@ if __name__ == '__main__':
               password=input_options.db_pass,
               tns=input_options.db_tns,
               schemas=schemas_list,
-              max_connetions=input_options.db_max_connections
+              max_connetions=int(input_options.db_max_connections)
               )
