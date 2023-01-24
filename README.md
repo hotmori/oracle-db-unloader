@@ -20,3 +20,21 @@ $ python db_unloader.py --help
 ```bash
 $ db_unloader.py -db-login=system -db-pass=qwerty -db-tns=orclpdb -db-max-connections=5 -schemas=scott,scott2
 ```
+The output result will be saved in folder (C:\db_unloader_results by default) as following:
+2023_01_24_134601
+  - scott
+  -- functions
+  ---- func1.sql
+  ---- func2.sql
+  ---- ....
+  -- packages
+  -- ...
+  -- views
+  - scott2
+  -- functions
+  ---- func1.sql
+  ---- func2.sql
+  ---- ....
+  -- packages
+  -- ...
+  -- views
