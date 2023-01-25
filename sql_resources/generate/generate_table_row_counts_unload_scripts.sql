@@ -16,6 +16,10 @@ select '@&v_sql_path/unload_table_row_counts.sql'|| ' '
   from dba_tables t
  where t.owner=upper('&v_schema')
    and not t.table_name like 'RB$%' -- todo
+   and not exists (select null
+                     from dba_mviews t2
+                    where t2.owner = t.owner
+                      and t2.mview_name =t.table_name)
  order by t.table_name
 /
 
