@@ -54,6 +54,7 @@ def create_session():
   return session
 
 def exec_sqlplus(session, script):
+  #print(f'run: {script=}')
   session.stdin.write(bytes (script + '\n', 'utf-8') )
   # there is need to flush buffer to avoid deadlock
   #   between stdin writing and stdout reading
@@ -79,11 +80,12 @@ def exec_batch_sqlplus(scripts, pool, desc):
   futures = []
   for script in scripts:
     future = pool.submit(exec_sqlplus_in_thread, script)
+    future.script = script
     futures.append(future)
 
   total_batch_item_cnt = len(futures)
   for idx, x in enumerate(as_completed(futures)):
-    print('..completed:', idx+1, 'out of:', total_batch_item_cnt, end ='\r', flush=True)
+    print('..completed:', idx+1, 'out of:', total_batch_item_cnt, x.script)
   done = time.time()
   elapsed = round(done - start, 2)
   print('\n..done:', elapsed, 'seconds')
@@ -93,12 +95,17 @@ def make_dir(dir_path):
     makedirs(dir_path)
     #print("Directory %s was created." %dir_path)
 
+def generate_sqlplus_command(script, schema, schema_path, objects_dir):
+
+  return '@' + join(SQL_RESOURCES_DIR,'generate',script) + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + objects_dir
+
 def unload(schema):
 
   schema_dir = schema
-  schema_path = g_results_path + '/' + g_db_scripts_dir + '/' + schema_dir
-  temp_path =  schema_path + '/' + TEMP_DIR
-  #temp_path =  g_results_path + '/' + TEMP_DIR + '_' + g_db_scripts_dir + '/' + '/' + schema_dir
+  schema_path = join(g_results_path,g_db_scripts_dir, schema_dir)
+  #schema_path = g_results_path + '/' + g_db_scripts_dir + '/' + schema_dir
+  temp_path =  join(schema_path,TEMP_DIR)
+  #temp_path =  schema_path + '/' + TEMP_DIR
   print(schema_path)
   print(temp_path)
   # MAIN  ------------------------------------------------------------------------------
@@ -115,23 +122,25 @@ def unload(schema):
   make_dir(schema_path + '/triggers')
   make_dir(schema_path + '/types')
   make_dir(schema_path + '/views')
+  make_dir(schema_path + '/mviews')
   make_dir(schema_path + '/tables')
   #make_dir(schema_path + '/table_rows')
   make_dir(schema_path + '/table_row_counts')
   make_dir(temp_path)
 
   gen_scripts = [
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_synonyms_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'synonyms',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_views_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'views',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_sequences_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'sequences',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_packages_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'packages',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_functions_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'functions',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_procedures_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'procedures',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_triggers_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'triggers',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_types_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'types',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_tables_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'tables',
-                  #'@' + SQL_RESOURCES_DIR + '/generate/generate_table_rows_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_rows',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_table_row_counts_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_row_counts',
+                  generate_sqlplus_command('generate_synonyms_unload_scripts.sql',schema, schema_path,'synonyms'),
+                  generate_sqlplus_command('generate_views_unload_scripts.sql',schema, schema_path,'views'),
+                  generate_sqlplus_command('generate_mviews_unload_scripts.sql',schema, schema_path,'mviews'),
+                  generate_sqlplus_command('generate_sequences_unload_scripts.sql',schema, schema_path,'sequences'),
+                  generate_sqlplus_command('generate_packages_unload_scripts.sql',schema, schema_path,'packages'),
+                  generate_sqlplus_command('generate_functions_unload_scripts.sql',schema, schema_path,'functions'),
+                  generate_sqlplus_command('generate_procedures_unload_scripts.sql',schema, schema_path,'procedures'),
+                  generate_sqlplus_command('generate_triggers_unload_scripts.sql',schema, schema_path,'triggers'),
+                  generate_sqlplus_command('generate_types_unload_scripts.sql',schema, schema_path,'types'),
+                  generate_sqlplus_command('generate_tables_unload_scripts.sql',schema, schema_path,'tables'),
+                  generate_sqlplus_command('generate_table_row_counts_unload_scripts.sql',schema, schema_path,'table_row_counts'),
+                 # generate_sqlplus_command('generate_table_rows_unload_scripts.sql',schema, schema_path,  TEMP_DIR, 'table_rows'),
                 ]
   #print(gen_scripts)
   exec_batch_sqlplus(gen_scripts, g_thread_pool, 'generation temp scripts')
