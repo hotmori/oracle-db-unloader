@@ -121,9 +121,9 @@ def unload(schema):
   make_dir(temp_path)
 
   gen_scripts = [
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_sequences_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'sequences',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_synonyms_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'synonyms',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_views_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'views',
+                  '@' + SQL_RESOURCES_DIR + '/generate/generate_sequences_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'sequences',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_packages_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'packages',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_functions_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'functions',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_procedures_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'procedures',
@@ -131,7 +131,7 @@ def unload(schema):
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_types_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'types',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_tables_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'tables',
                   #'@' + SQL_RESOURCES_DIR + '/generate/generate_table_rows_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_rows',
-                  '@' + SQL_RESOURCES_DIR + '/generate/generate_table_row_counts_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_row_counts',
+                  '@' + SQL_RESOURCES_DIR + '/generate/generate_table_row_counts_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_row_counts',
                 ]
   #print(gen_scripts)
   exec_batch_sqlplus(gen_scripts, g_thread_pool, 'generation temp scripts')

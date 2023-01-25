@@ -7,8 +7,8 @@ define v_obj_path=&4
 
 spool &v_obj_path\&v_obj_file_name..sql
 
-select count(*) from &v_schema..&v_obj_name
-prompt /
+select count(*) as cnt from &v_schema..&v_obj_name
+/
 
 spool off
 
