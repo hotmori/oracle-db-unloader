@@ -117,6 +117,7 @@ def unload(schema):
   make_dir(schema_path + '/views')
   make_dir(schema_path + '/tables')
   #make_dir(schema_path + '/table_rows')
+  make_dir(schema_path + '/table_row_counts')
   make_dir(temp_path)
 
   gen_scripts = [
@@ -130,6 +131,7 @@ def unload(schema):
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_types_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'types',
                   '@' + SQL_RESOURCES_DIR + '/generate/generate_tables_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'tables',
                   #'@' + SQL_RESOURCES_DIR + '/generate/generate_table_rows_unload_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_rows',
+                  '@' + SQL_RESOURCES_DIR + '/generate/generate_table_row_counts_scripts.sql' + ' ' + schema + ' ' + schema_path + ' ' + TEMP_DIR + ' ' + 'table_row_counts',
                 ]
   #print(gen_scripts)
   exec_batch_sqlplus(gen_scripts, g_thread_pool, 'generation temp scripts')
